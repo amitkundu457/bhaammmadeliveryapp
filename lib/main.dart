@@ -37,54 +37,12 @@ import 'package:bhamma_delivery_boy/screen/search_screen.dart';
 import 'package:bhamma_delivery_boy/screen/splash_screen.dart';
 import 'package:bhamma_delivery_boy/screen/withdrawals/wallet_screen.dart';
 import 'package:bhamma_delivery_boy/utils/default_colors.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'firebase_options.dart';
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp();
-  print('📩 Background Message: ${message.messageId}');
-}
+
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
-
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-
-  String? token = await FirebaseMessaging.instance.getToken();
-  print('📱 Firebase FCM Token: $token');
-
-  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
-    alert: true,
-    badge: true,
-    sound: true,
-  );  // <-- MOST IMPORTANT
-
-  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-    print("🔥 Foreground Message Received: ${message.notification?.title}");
-  });
-
-  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-    print("📩 Notification Click Opened App");
-  });
-
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
-  await _requestNotificationPermission();
   final savedThemeMode = await AdaptiveTheme.getThemeMode();
   runApp(MyApp(savedThemeMode: savedThemeMode));
-}
-
-
-Future<void> _requestNotificationPermission() async {
-  NotificationSettings settings = await FirebaseMessaging.instance.requestPermission(
-    alert: true,
-    badge: true,
-    sound: true,
-  );
-
-  print('🔔 Notification permission status: ${settings.authorizationStatus}');
 }
 
 class MyApp extends StatelessWidget {

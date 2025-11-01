@@ -150,8 +150,7 @@ class _OrderScreenState extends State<OrderScreen> {
         final order = pendingOrders[index];
         return InkWell(
           onTap: () {
-            Navigator.pushNamed(context, "/order_details",
-                arguments: order.orderId);
+            Navigator.pushNamed(context, "/order_details", arguments: order.orderId);
           },
           child: CustomOrderCard(
             orderNumber: order.orderId.toString(),
@@ -232,7 +231,7 @@ class _OrderScreenState extends State<OrderScreen> {
                   },
                 )
               ],
-            ),
+          ),
     );
   }
 

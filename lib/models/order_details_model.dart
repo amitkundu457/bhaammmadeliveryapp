@@ -516,3 +516,73 @@ class Address {
     return data;
   }
 }
+
+// New Seller Model
+class Seller {
+  int? id;
+  String? type;
+  String? name;
+  String? email;
+  DateTime? emailVerifiedAt;
+  int? status;
+  dynamic isActive;
+  dynamic referredBy;
+  dynamic walletBalance;
+  dynamic referralCode;
+  dynamic firstOrderDiscount;
+  dynamic otp;
+  dynamic otpExpiresAt;
+  DateTime? createdAt;
+  DateTime? updatedAt;
+  List<Address>? address; // Seller also has an address list
+
+  Seller({
+    this.id,
+    this.type,
+    this.name,
+    this.email,
+    this.emailVerifiedAt,
+    this.status,
+    this.isActive,
+    this.referredBy,
+    this.walletBalance,
+    this.referralCode,
+    this.firstOrderDiscount,
+    this.otp,
+    this.otpExpiresAt,
+    this.createdAt,
+    this.updatedAt,
+    this.address,
+  });
+
+  factory Seller.fromJson(Map<String, dynamic> json) {
+    return Seller(
+      id: json['id'],
+      type: json['type'],
+      name: json['name'],
+      email: json['email'],
+      emailVerifiedAt: json['email_verified_at'] != null
+          ? DateTime.tryParse(json['email_verified_at'])
+          : null,
+      status: json['status'],
+      isActive: json['is_active'],
+      referredBy: json['referred_by'],
+      walletBalance: json['wallet_balance'],
+      referralCode: json['referral_code'],
+      firstOrderDiscount: json['first_order_discount'],
+      otp: json['otp'],
+      otpExpiresAt: json['otp_expires_at'],
+      createdAt: json['created_at'] != null
+          ? DateTime.tryParse(json['created_at'])
+          : null,
+      updatedAt: json['updated_at'] != null
+          ? DateTime.tryParse(json['updated_at'])
+          : null,
+      address: json['address'] != null
+          ? (json['address'] as List)
+          .map((e) => Address.fromJson(e))
+          .toList()
+          : null,
+    );
+  }
+}

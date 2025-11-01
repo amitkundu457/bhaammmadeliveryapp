@@ -249,8 +249,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
         onClicked: onClicked,
       ),
       appBar: AppBar(
-        title: const Text("Order Details",
-            style: TextStyle(color: DefaultColor.mainColor)),
+        title: const Text("Order Details", style: TextStyle(color: DefaultColor.mainColor)),
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, color: DefaultColor.mainColor),

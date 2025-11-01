@@ -197,8 +197,7 @@ class ApiService {
     String? token,
   }) async {
     try {
-      var response =
-          await http.get(Uri.parse(url), headers: _getHeadersForGet(token));
+      var response = await http.get(Uri.parse(url), headers: _getHeadersForGet(token));
 
       if (response.statusCode == 200) {
         return jsonDecode(response.body);

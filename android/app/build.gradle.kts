@@ -34,7 +34,7 @@ android {
         applicationId = "com.bhamma_delivery_boy.app"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = 23
+        minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
@@ -57,11 +57,6 @@ android {
             signingConfig = signingConfigs.getByName("release")
         }
     }
-}
-
-dependencies {
-    implementation("com.google.firebase:firebase-messaging:25.0.1")
-    // rest existing flutter deps keep as is
 }
 
 flutter {

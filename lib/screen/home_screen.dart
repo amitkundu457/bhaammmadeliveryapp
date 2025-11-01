@@ -80,7 +80,6 @@ class HomeScreenState extends State<HomeScreen> {
           (route) => false,
         );
       }
-
       onlineValue = profileDetails!.isOnline;
       onlineValue == 1 ? isOnline = true : false;
       print("online value $onlineValue");

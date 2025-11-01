@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:ffi';
 import 'dart:io';
 
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -26,140 +25,36 @@ import 'api_consts.dart';
 import 'api_service.dart';
 
 class ApiHandler {
-  static Future<String?> logIn(
-      String email, String password, BuildContext context) async {
+  static Future logIn(String email, String password, BuildContext context) async {
     final Map<String, dynamic> userData = {
       "email": email,
-      "password": password,
+      "password": password
     };
-
     var uri = "$baseUrl$login";
     var response = await ApiService.makePostRequestJsonEncodeWithoutToken(
       uri,
       userData,
       context: context,
     );
-
-    print("🔐 Login API Response: $response");
-
-    if (response != null && response['token'] != null) {
+    print("Token ok $response");
+    if (response != null) {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('login_token', response['token']);
       await prefs.setInt('user_id', response['user_id']);
-
-      print("✅ Login Token & User ID saved successfully");
-
-      // ✅ Automatically save FCM token after login
-      await ApiHandler.saveFcmToken(response['user_id'].toString());
-
       return "success";
     } else {
-      print("❌ Login failed or invalid response");
       return null;
     }
   }
 
-  // ---------------------------------------------------------------------------
-  // 🔹 GENERATE & SAVE FCM TOKEN LOCALLY
-  // ---------------------------------------------------------------------------
-  static Future<void> _generateAndSaveFcmToken() async {
-    try {
-      FirebaseMessaging messaging = FirebaseMessaging.instance;
-      String? token = await messaging.getToken();
-
-      if (token != null) {
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString("Fcm_token", token);
-        print("📱 FCM Token generated & saved locally: $token");
-      } else {
-        print("❌ Failed to generate FCM token");
-      }
-
-      // 🔁 Token refresh listener
-      FirebaseMessaging.instance.onTokenRefresh.listen((newToken) async {
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString("Fcm_token", newToken);
-        print("🔁 FCM Token refreshed & saved: $newToken");
-      });
-    } catch (e) {
-      print("❌ Error generating FCM token: $e");
-    }
-  }
-
-  // ---------------------------------------------------------------------------
-  // 🔹 SEND FCM TOKEN TO SERVER
-  // ---------------------------------------------------------------------------
-  static Future<void> saveFcmToken(String customerId) async {
-    try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String? fcmToken = prefs.getString("Fcm_token");
-      const String deviceType = "android";
-
-      if (fcmToken == null) {
-        print("⚠️ FCM Token not found, generating new one...");
-        await _generateAndSaveFcmToken();
-        fcmToken = prefs.getString("Fcm_token");
-      }
-
-      if (fcmToken == null) {
-        print("❌ Still no FCM token. Skipping save.");
-        return;
-      }
-
-      var response = await http.post(
-        Uri.parse("${baseUrl}save-token"),
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json",
-        },
-        body: jsonEncode({
-          "user_id": customerId,
-          "token": fcmToken,
-          "device_type": deviceType,
-        }),
-      );
-
-      print("📩 Save Token API Response: ${response.body}");
-    } catch (e) {
-      print("❌ Error saving FCM Token: $e");
-    }
-  }
-
-  // ---------------------------------------------------------------------------
-  // 🔹 INITIALIZE FCM ON APP START (Splash or main)
-  // ---------------------------------------------------------------------------
-  static Future<void> initFcmToken() async {
-    try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      String? token = prefs.getString("Fcm_token");
-
-      if (token == null) {
-        print("⚠️ No FCM token found, generating new one...");
-        await _generateAndSaveFcmToken();
-      } else {
-        print("✅ FCM Token already saved locally: $token");
-      }
-
-      // 🔁 Auto update when refreshed
-      FirebaseMessaging.instance.onTokenRefresh.listen((newToken) async {
-        await prefs.setString("Fcm_token", newToken);
-        print("♻️ FCM Token refreshed: $newToken");
-      });
-    } catch (e) {
-      print("❌ Error initializing FCM Token: $e");
-    }
-  }
-
-  static Future<String?> signUp(
-      String name, String email, String password, String contact, BuildContext context) async {
+  static Future signUp(String name, String email, String password,contact, BuildContext context) async {
     final Map<String, dynamic> userData = {
       "name": name,
       "email": email,
       "password": password,
-      "phone": contact,
+      "phone":contact
     };
-
-    print("📤 Signup data: $userData");
+    print(userData);
     var uri = "$baseUrl$registration";
 
     var response = await ApiService.signup(
@@ -167,57 +62,13 @@ class ApiHandler {
       userData,
       context: context,
     );
-
-    print("📩 Signup API response: $response");
-
+    print("response $response");
     if (response != null) {
-      // ✅ Store login_token and user_id if signup returns them
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
-
-      if (response['token'] != null) {
-        await prefs.setString('login_token', response['token']);
-      }
-
-      if (response['user_id'] != null) {
-        await prefs.setInt('user_id', response['user_id']);
-        print("✅ Signup successful — user_id: ${response['user_id']}");
-
-        // 🔥 After signup, save FCM token
-        await ApiHandler.saveFcmToken(response['user_id'].toString());
-      } else {
-        print("⚠️ Signup response missing user_id");
-      }
-
       return "success";
     } else {
-      print("❌ Signup failed or null response");
       return null;
     }
   }
-
-
-  // static Future signUp(String name, String email, String password,contact, BuildContext context) async {
-  //   final Map<String, dynamic> userData = {
-  //     "name": name,
-  //     "email": email,
-  //     "password": password,
-  //     "phone":contact
-  //   };
-  //   print(userData);
-  //   var uri = "$baseUrl$registration";
-  //
-  //   var response = await ApiService.signup(
-  //     uri,
-  //     userData,
-  //     context: context,
-  //   );
-  //   print("response $response");
-  //   if (response != null) {
-  //     return "success";
-  //   } else {
-  //     return null;
-  //   }
-  // }
 
   // static Future<ProfileDetails?> getDeliveryBoydetails(String secretKey) async {
   //   var url = '$baseUrl$getDeliveryBoyDetails';
