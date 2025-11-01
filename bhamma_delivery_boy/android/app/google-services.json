@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "980974360453",
+    "project_id": "bhaamma-foods-rider",
+    "storage_bucket": "bhaamma-foods-rider.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:980974360453:android:be3a4a63ef8e683e7dd6ec",
+        "android_client_info": {
+          "package_name": "com.bhamma_delivery_boy.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCuGGKIFlgXagXQ30tDST3SkBp2QgREKGM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
